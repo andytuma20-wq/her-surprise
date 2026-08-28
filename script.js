@@ -10,13 +10,13 @@ const CONFIG = {
   herName: "Ruby",
 
   // Your name — shown on the final signature line.
-  myName: "YOUR NAME",
+  myName: "Uncle T🤠",
 
   // ---- MUSIC ----
   // Set to true once you've placed a file named "music.mp3" in this same
   // folder. It never autoplays with sound — she has to tap the music button
   // herself (browsers block autoplay with sound anyway).
-  enableMusic: false,
+  enableMusic: true,
 
   // ---- OPTIONAL MEMORIES ----
   // Short lines / inside jokes shown on the final scrapbook page.
