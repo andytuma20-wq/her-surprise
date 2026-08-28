@@ -1,0 +1,622 @@
+/* ==========================================================================
+   FOR RUBY — stylesheet (v2: feminine scrapbook redesign)
+   --------------------------------------------------------------------------
+   DESIGN CONCEPT: "dollhouse scrapbook"
+   A soft blush-to-lavender gradient world, glassy translucent cards, hand-
+   drawn flowers/sparkles/butterflies used sparingly as accents, a small
+   generic doll illustration as a recurring decorative character, and a
+   handwritten-note treatment for the final letter. Nothing is copyrighted —
+   all art is simple original SVG shapes defined in index.html.
+
+   WANT TO CHANGE THE COLORS? Edit the CSS variables in :root below.
+   ========================================================================== */
+
+:root {
+  /* ---- palette ---- */
+  --blush:      #f7dbe0;   /* soft baby pink */
+  --dusty-rose: #d98a97;   /* dusty rose accent */
+  --cream:      #fdf3ec;   /* warm cream */
+  --warm-white: #fffaf6;   /* card / paper white */
+  --lavender:   #d9cdec;   /* soft lavender */
+  --peach:      #f6cdab;   /* subtle peach */
+  --burgundy:   #93384a;   /* darker pink, used sparingly for contrast */
+  --ink:        #6b4f57;   /* warm brown-plum ink for body text */
+  --ink-soft:   #8a6f76;
+
+  /* doll illustration colors — edit to restyle the little character */
+  --doll-skin:  #f4c9a8;
+  --doll-hair:  #6b4635;
+  --doll-dress: var(--dusty-rose);
+  --doll-dress-dark: #c06a7a;
+  --doll-accent: var(--warm-white);
+  --doll-line:  #5a4048;
+
+  /* ---- type ---- */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-hand: "Caveat", "Segoe Script", cursive;
+  --font-body: "Quicksand", -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* ---- misc ---- */
+  --radius: 22px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--cream);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   AMBIENT BACKGROUND — pink → cream → lavender wash + drifting petals
+   ========================================================================== */
+
+.bg-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-wash {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(247, 219, 224, 0.9), transparent 60%),
+    radial-gradient(ellipse 70% 55% at 90% 20%, rgba(217, 205, 236, 0.7), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(246, 205, 171, 0.35), transparent 65%),
+    var(--cream);
+}
+
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================================
+   PROGRESS THREAD
+   ========================================================================== */
+
+.thread-track {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: rgba(147, 56, 74, 0.08);
+  z-index: 50;
+}
+
+.thread-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--dusty-rose), var(--lavender));
+  transition: width 0.6s var(--ease);
+  box-shadow: 0 0 10px rgba(217, 138, 151, 0.5);
+}
+
+/* ==========================================================================
+   LAYOUT / SCREENS
+   ========================================================================== */
+
+#app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 8vh 6vw 10vh;
+  position: relative;
+}
+
+.screen.active {
+  display: flex;
+  animation: screenIn 0.9s var(--ease);
+}
+
+@keyframes screenIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.screen-soft {
+  background: radial-gradient(ellipse at 50% 35%, rgba(217, 205, 236, 0.35), transparent 65%);
+}
+
+.screen-question {
+  background: radial-gradient(ellipse at 50% 30%, rgba(217, 138, 151, 0.18), transparent 70%);
+}
+
+.screen-inner {
+  max-width: 560px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65em;
+  position: relative;
+}
+
+.screen-inner.center {
+  text-align: center;
+  align-items: center;
+}
+
+/* ==========================================================================
+   STICKER LABEL (scrapbook-style tag)
+   ========================================================================== */
+
+.sticker {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--burgundy);
+  background: var(--warm-white);
+  border: 1px solid rgba(147, 56, 74, 0.15);
+  padding: 0.25em 0.9em;
+  border-radius: 999px;
+  transform: rotate(-3deg);
+  box-shadow: 0 4px 14px rgba(147, 56, 74, 0.08);
+  margin-bottom: 0.4em;
+  opacity: 0;
+}
+.screen-inner.center .sticker { align-self: center; }
+.sticker.is-visible { animation: stickerIn 0.6s var(--ease) forwards; }
+@keyframes stickerIn {
+  from { opacity: 0; transform: rotate(-3deg) scale(0.7); }
+  to { opacity: 1; transform: rotate(-3deg) scale(1); }
+}
+
+/* ==========================================================================
+   TEXT LINES + REVEAL ANIMATION
+   ========================================================================== */
+
+.line {
+  font-size: clamp(1.02rem, 4.3vw, 1.3rem);
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(4px);
+  max-width: 44ch;
+}
+
+.line.is-visible {
+  animation: lineIn 0.8s var(--ease) forwards;
+}
+
+@keyframes lineIn {
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.line-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.1rem, 9.5vw, 3rem);
+  color: var(--burgundy);
+}
+
+.line-emphasis {
+  color: var(--burgundy);
+  font-weight: 600;
+}
+
+.line-confession {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 7.2vw, 2.5rem);
+  color: var(--burgundy);
+  line-height: 1.35;
+  max-width: 14ch;
+}
+
+.line-question {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.85rem, 7.8vw, 2.6rem);
+  color: var(--burgundy);
+  max-width: 16ch;
+  line-height: 1.3;
+}
+
+.line-small {
+  font-size: clamp(0.85rem, 3.3vw, 0.98rem);
+  color: var(--ink-soft);
+  font-weight: 500;
+  opacity: 0;
+}
+.line-small.is-visible { opacity: 0.85; }
+
+.word-list { color: var(--dusty-rose); font-style: italic; font-family: var(--font-display); }
+
+.spacer-line { margin-top: 0.9em; }
+.emoji { font-style: normal; }
+
+/* waypoint (Mombasa marker) */
+.waypoint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 1em 0;
+  opacity: 0;
+  transform: translateY(10px);
+}
+.waypoint.is-visible { animation: lineIn 0.8s var(--ease) forwards; }
+.waypoint-icon { width: 20px; height: 20px; color: var(--dusty-rose); }
+.waypoint-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.15rem, 4.8vw, 1.5rem);
+  color: var(--burgundy);
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 0.95em 1.9em;
+  margin-top: 1.5em;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn.is-visible {
+  animation: lineIn 0.8s var(--ease) forwards;
+}
+
+.btn-primary {
+  align-self: flex-start;
+  background: rgba(255, 250, 246, 0.6);
+  color: var(--burgundy);
+  border: 1.5px solid rgba(147, 56, 74, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(147, 56, 74, 0.08);
+}
+
+.screen-inner.center .btn-primary { align-self: center; }
+
+.btn-primary:active { transform: scale(0.96); }
+
+.btn-primary:hover {
+  background: rgba(217, 138, 151, 0.18);
+  border-color: rgba(217, 138, 151, 0.55);
+  box-shadow: 0 8px 24px rgba(217, 138, 151, 0.18);
+}
+
+.btn-restart {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1.5px solid rgba(147, 56, 74, 0.18);
+  align-self: center;
+  font-size: 0.9rem;
+}
+.btn-restart:hover { background: rgba(217, 138, 151, 0.12); }
+.btn-restart:active { transform: scale(0.96); }
+
+.question-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 2em;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  min-height: 60px;
+}
+
+.btn-yes, .btn-no {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 700;
+  padding: 1em 1.9em;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  min-height: 52px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, var(--dusty-rose), var(--burgundy));
+  color: var(--warm-white);
+  box-shadow: 0 8px 26px rgba(147, 56, 74, 0.3);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.btn-yes:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 30px rgba(147, 56, 74, 0.4); }
+.btn-yes:active { transform: scale(0.95); }
+
+.btn-no {
+  background: var(--warm-white);
+  color: var(--ink-soft);
+  border: 1.5px solid rgba(147, 56, 74, 0.18);
+  transition: transform 0.18s ease, left 0.35s var(--ease), top 0.35s var(--ease);
+}
+.btn-no:active { transform: scale(0.94); }
+
+.dodge-msg {
+  min-height: 1.4em;
+  margin-top: 0.9em;
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--burgundy);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.dodge-msg.show { opacity: 1; }
+
+/* ==========================================================================
+   DECORATIVE ELEMENTS — flowers, sparkles, butterflies, bows
+   ========================================================================== */
+
+.icon { width: 100%; height: 100%; display: block; }
+.icon-rose { color: var(--dusty-rose); }
+.icon-lav { color: var(--lavender); }
+.icon-peach { color: var(--peach); }
+.icon-gold { color: var(--peach); }
+.icon-dusty { color: var(--dusty-rose); }
+.icon-burgundy { color: var(--burgundy); }
+
+.deco {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  opacity: 0;
+  pointer-events: none;
+}
+.deco.is-visible { animation: decoIn 0.9s var(--ease) forwards; }
+@keyframes decoIn {
+  from { opacity: 0; transform: scale(0.5) rotate(-15deg); }
+  to { opacity: 0.9; transform: scale(1) rotate(0deg); }
+}
+
+.deco-tl { top: 4%; left: 4%; }
+.deco-tr { top: 6%; right: 5%; width: 30px; height: 30px; }
+.deco-bl { bottom: 8%; left: 5%; width: 40px; height: 34px; }
+.deco-br { bottom: 10%; right: 6%; width: 22px; height: 22px; }
+
+.deco-sparkle { width: 20px; height: 20px; }
+.deco-butterfly { width: 42px; height: 34px; }
+
+/* ==========================================================================
+   DOLL CHARACTER
+   ========================================================================== */
+
+.doll-wrap {
+  width: 84px;
+  height: 140px;
+  margin-bottom: 0.6em;
+  opacity: 0;
+}
+.doll-wrap.is-visible,
+.doll-wrap#dollCelebrate { opacity: 1; }
+.doll-svg { width: 100%; height: 100%; }
+
+.doll-question { animation: dollFloat 4s ease-in-out infinite; }
+.doll-celebrate { animation: dollBounce 0.8s var(--ease); opacity: 1; }
+
+@keyframes dollFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes dollBounce {
+  0% { transform: translateY(-30px) scale(0.7); opacity: 0; }
+  60% { transform: translateY(6px) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ==========================================================================
+   FINAL LETTER CARD (handwritten scrapbook note)
+   ========================================================================== */
+
+.letter-card {
+  position: relative;
+  width: 100%;
+  background:
+    linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)),
+    repeating-linear-gradient(rgba(147,56,74,0.05) 0px, rgba(147,56,74,0.05) 1px, transparent 1px, transparent 32px);
+  background-color: var(--warm-white);
+  border-radius: var(--radius);
+  padding: 2.2em 1.8em;
+  box-shadow: 0 16px 40px rgba(147, 56, 74, 0.12);
+  border: 1px solid rgba(147, 56, 74, 0.1);
+  opacity: 0;
+}
+.letter-card.is-visible { animation: lineIn 0.9s var(--ease) forwards; }
+
+.letter-deco-1 {
+  position: absolute;
+  top: -16px;
+  left: -14px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.9;
+}
+.letter-deco-2 {
+  position: absolute;
+  top: -18px;
+  right: -10px;
+  width: 46px;
+  height: 30px;
+  opacity: 0.9;
+  transform: rotate(8deg);
+}
+
+.handwritten-line {
+  font-family: var(--font-hand);
+  font-size: clamp(1.3rem, 5.5vw, 1.65rem);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.25em;
+  opacity: 0;
+  transform: translateY(10px);
+  line-height: 1.4;
+}
+.handwritten-line.is-visible { animation: lineIn 0.7s var(--ease) forwards; }
+.handwritten-emphasis { color: var(--burgundy); font-size: clamp(1.5rem, 6.2vw, 1.9rem); }
+
+.signature {
+  font-family: var(--font-hand);
+  font-size: clamp(1.5rem, 6vw, 1.9rem);
+  color: var(--burgundy);
+  margin-top: 0.8em;
+  opacity: 0;
+}
+.signature.is-visible { animation: lineIn 0.8s var(--ease) forwards; }
+
+/* ==========================================================================
+   MEMORIES + PHOTO GALLERY (final screen)
+   ========================================================================== */
+
+.memories { margin-top: 2em; width: 100%; }
+.memories-title {
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.8em;
+}
+.memories-grid { display: grid; gap: 10px; text-align: left; }
+.memory-card {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(147,56,74,0.12);
+  border-radius: var(--radius);
+  padding: 1em 1.2em;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.photo-gallery {
+  margin-top: 1.6em;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.photo-strip { display: flex; gap: 12px; padding-bottom: 6px; }
+.photo-strip img {
+  height: 170px;
+  width: auto;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 3px solid var(--warm-white);
+  box-shadow: 0 8px 20px rgba(147,56,74,0.15);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   MUSIC BUTTON
+   ========================================================================== */
+
+.music-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(147, 56, 74, 0.2);
+  background: rgba(255, 250, 246, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--burgundy);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 18px rgba(147,56,74,0.12);
+}
+.music-btn.playing { background: var(--dusty-rose); color: var(--warm-white); }
+
+/* ==========================================================================
+   CELEBRATION CANVAS
+   ========================================================================== */
+
+#celebration-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.shake { animation: shake 0.5s var(--ease); }
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 2px); }
+  40% { transform: translate(4px, -2px); }
+  60% { transform: translate(-3px, 0); }
+  80% { transform: translate(3px, 1px); }
+}
+
+/* ==========================================================================
+   RESPONSIVE — tested down to 320px
+   ========================================================================== */
+
+@media (max-width: 359px) {
+  .screen { padding: 6vh 5vw 8vh; }
+  .doll-wrap { width: 66px; height: 110px; }
+  .deco { width: 24px; height: 24px; }
+  .letter-card { padding: 1.6em 1.2em; }
+}
+
+@media (min-width: 700px) {
+  .screen { padding: 8vh 8vw; }
+  .screen-inner { max-width: 620px; }
+  .letter-card { padding: 3em 3em; }
+}
+
+@media (max-height: 560px) {
+  .screen { padding: 5vh 6vw; }
+  .line { font-size: 1rem; }
+  .doll-wrap { width: 60px; height: 100px; }
+}

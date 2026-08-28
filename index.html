@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>For Ruby 💌</title>
+
+<!-- Google Fonts: Fraunces (soft display serif for emotional lines), Caveat (handwritten accent, stickers/notes),
+     Quicksand (rounded, friendly body font). Site still works fine if these fail to load — see fallback stacks in style.css. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,500&family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     REUSABLE SVG ART LIBRARY (all hand-drawn/original shapes —
+     no copyrighted characters or brand assets). Used via <use> tags
+     all over the page. Edit the paths here to change how the
+     flowers / sparkles / butterfly / bow look everywhere at once.
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="art-flower" viewBox="0 0 40 40">
+      <g>
+        <ellipse cx="20" cy="10" rx="7" ry="9" fill="currentColor" opacity="0.9"/>
+        <ellipse cx="20" cy="30" rx="7" ry="9" fill="currentColor" opacity="0.9"/>
+        <ellipse cx="10" cy="20" rx="9" ry="7" fill="currentColor" opacity="0.9"/>
+        <ellipse cx="30" cy="20" rx="9" ry="7" fill="currentColor" opacity="0.9"/>
+        <circle cx="20" cy="20" r="5" fill="var(--peach)"/>
+      </g>
+    </symbol>
+    <symbol id="art-sparkle" viewBox="0 0 24 24">
+      <path d="M12 0 C12.5 8 14 10 22 12 C14 14 12.5 16 12 24 C11.5 16 10 14 2 12 C10 10 11.5 8 12 0 Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="art-butterfly" viewBox="0 0 48 40">
+      <line x1="24" y1="6" x2="24" y2="34" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+      <path d="M24 10 C14 -2 0 4 4 16 C8 26 18 22 24 14 Z" fill="currentColor" opacity="0.85"/>
+      <path d="M24 10 C34 -2 48 4 44 16 C40 26 30 22 24 14 Z" fill="currentColor" opacity="0.85"/>
+      <path d="M24 18 C16 22 10 30 14 36 C18 40 22 32 24 24 Z" fill="currentColor" opacity="0.65"/>
+      <path d="M24 18 C32 22 38 30 34 36 C30 40 26 32 24 24 Z" fill="currentColor" opacity="0.65"/>
+    </symbol>
+    <symbol id="art-bow" viewBox="0 0 48 32">
+      <path d="M22 16 C22 8 6 4 3 10 C0 16 10 20 22 17 Z" fill="currentColor"/>
+      <path d="M26 16 C26 8 42 4 45 10 C48 16 38 20 26 17 Z" fill="currentColor"/>
+      <circle cx="24" cy="16" r="4.5" fill="currentColor"/>
+    </symbol>
+    <!-- Generic, non-branded scrapbook "doll" illustration — simple, decorative silhouette. -->
+    <symbol id="art-doll" viewBox="0 0 120 200">
+      <ellipse cx="60" cy="34" rx="22" ry="24" fill="var(--doll-skin)"/>
+      <path d="M38 22 C38 4 82 4 82 22 C82 34 76 30 60 30 C44 30 38 34 38 22 Z" fill="var(--doll-hair)"/>
+      <path d="M30 30 C20 46 22 60 30 60 L30 40 Z" fill="var(--doll-hair)"/>
+      <path d="M90 30 C100 46 98 60 90 60 L90 40 Z" fill="var(--doll-hair)"/>
+      <rect x="48" y="52" width="24" height="18" rx="8" fill="var(--doll-skin)"/>
+      <path d="M60 66 C30 66 24 100 30 150 C34 178 86 178 90 150 C96 100 90 66 60 66 Z" fill="var(--doll-dress)"/>
+      <path d="M60 66 C46 66 40 84 40 100 L80 100 C80 84 74 66 60 66 Z" fill="var(--doll-dress-dark)"/>
+      <circle cx="60" cy="86" r="6" fill="var(--doll-accent)"/>
+      <path d="M40 150 C40 168 34 182 26 190" stroke="var(--doll-skin)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <path d="M80 150 C80 168 86 182 94 190" stroke="var(--doll-skin)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <ellipse cx="52" cy="46" rx="2.2" ry="3" fill="var(--doll-line)"/>
+      <ellipse cx="68" cy="46" rx="2.2" ry="3" fill="var(--doll-line)"/>
+      <path d="M54 56 C57 59 63 59 66 56" stroke="var(--doll-line)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+  <!-- ================= AMBIENT BACKGROUND ================= -->
+  <!-- Soft pink → cream → lavender gradient wash, plus drifting petals/sparkles filled by script.js -->
+  <div class="bg-scene" aria-hidden="true">
+    <div class="bg-wash"></div>
+    <canvas id="particle-canvas"></canvas>
+  </div>
+
+  <!-- Progress thread — grows as she moves through the letter -->
+  <div class="thread-track" aria-hidden="true">
+    <div class="thread-fill" id="threadFill"></div>
+  </div>
+
+  <main id="app">
+
+    <!-- ============ SCREEN 1 — OPENING ============ -->
+    <section class="screen active" data-screen="1" id="screen1">
+      <div class="screen-inner center">
+        <span class="sticker" data-reveal>for <span class="her-name">Ruby</span> 💌</span>
+        <p class="line line-name" data-reveal><span class="her-name">Ruby</span>... <span class="emoji">💌</span></p>
+        <p class="line" data-reveal>Okay, before you start wondering what on earth I've made you open... <span class="emoji">😂</span></p>
+        <p class="line" data-reveal>I promise this isn't a trap.</p>
+        <p class="line" data-reveal>Just let me have a few minutes of your attention.</p>
+        <button class="btn btn-primary" data-reveal data-next="2">Okay, I'm curious 🎀</button>
+        <div class="deco deco-flower deco-tl" data-reveal><svg class="icon icon-rose"><use href="#art-flower"/></svg></div>
+        <div class="deco deco-sparkle deco-br" data-reveal><svg class="icon icon-gold"><use href="#art-sparkle"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 2 — THE HISTORY ============ -->
+    <section class="screen" data-screen="2" id="screen2">
+      <div class="screen-inner">
+        <span class="sticker" data-reveal>a little something…</span>
+        <p class="line" data-reveal>There was something beautiful between us once.</p>
+        <p class="line" data-reveal>Somewhere along the way, things became complicated.</p>
+        <p class="line" data-reveal>Maybe it was timing.</p>
+        <p class="line" data-reveal>Maybe misunderstandings.</p>
+        <p class="line" data-reveal>Maybe we were simply two people trying to figure life out.</p>
+        <p class="line" data-reveal>Whatever the reason —</p>
+        <p class="line line-emphasis" data-reveal>we went from knowing each other's little things...</p>
+        <p class="line line-emphasis" data-reveal>to becoming people who barely talked.</p>
+        <p class="line spacer-line" data-reveal>And honestly, that still feels a little unfair. <span class="emoji">😂</span></p>
+        <p class="line" data-reveal>Because sometimes I still remember the little things.</p>
+        <p class="line word-list" data-reveal>the random conversations. the stupid jokes.</p>
+        <p class="line" data-reveal>The moments that probably seemed insignificant at the time...</p>
+        <p class="line" data-reveal>but somehow stayed with me.</p>
+        <button class="btn btn-primary" data-reveal data-next="3">Keep going →</button>
+        <div class="deco deco-flower deco-tr" data-reveal><svg class="icon icon-lav"><use href="#art-flower"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 3 — RECONNECTING / MOMBASA ============ -->
+    <section class="screen" data-screen="3" id="screen3">
+      <div class="screen-inner">
+        <span class="sticker" data-reveal>keep reading 👀</span>
+        <p class="line" data-reveal>Then Mombasa happened.</p>
+        <p class="line" data-reveal>Or rather... the possibility of Mombasa.</p>
+        <p class="line" data-reveal>And strangely enough, it made me realize something.</p>
+
+        <div class="waypoint" data-reveal>
+          <svg class="icon icon-rose waypoint-icon"><use href="#art-sparkle"/></svg>
+          <span class="waypoint-label">I wasn't just excited about the trip.</span>
+        </div>
+
+        <p class="line" data-reveal>I was excited about the possibility of seeing you.</p>
+        <p class="line word-list" data-reveal>talking to you again. laughing with you again.</p>
+        <p class="line" data-reveal>Getting to experience what it feels like to simply be around you.</p>
+
+        <p class="line spacer-line" data-reveal>And that's when I realized…</p>
+        <p class="line line-emphasis" data-reveal>this wasn't really about Mombasa.</p>
+        <p class="line" data-reveal>Mombasa just gave me an excuse to admit something I've been avoiding.</p>
+
+        <button class="btn btn-primary" data-reveal data-next="4">Keep going →</button>
+        <div class="deco deco-butterfly deco-bl" data-reveal><svg class="icon icon-dusty"><use href="#art-butterfly"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 4 — ANTICIPATION ============ -->
+    <section class="screen screen-soft" data-screen="4" id="screen4">
+      <div class="screen-inner center">
+        <p class="line line-name" data-reveal><span class="her-name">Ruby</span>…</p>
+        <p class="line line-emphasis" data-reveal>There is something I've never really managed to convince myself to stop feeling.</p>
+        <button class="btn btn-primary" data-reveal data-next="5">...</button>
+        <div class="deco deco-sparkle deco-tr" data-reveal><svg class="icon icon-gold"><use href="#art-sparkle"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 5 — THE CONFESSION ============ -->
+    <section class="screen screen-soft" data-screen="5" id="screen5">
+      <div class="screen-inner center">
+        <span class="sticker" data-reveal>important stuff… <span class="emoji">✨</span></span>
+        <p class="line line-confession" data-reveal data-reveal-delay="500">I still like you.</p>
+        <p class="line spacer-line" data-reveal>But honestly?</p>
+        <p class="line" data-reveal>It's probably bigger than that.</p>
+        <p class="line line-emphasis" data-reveal>I still care about you.</p>
+        <p class="line" data-reveal>More than I probably should after all this time. <span class="emoji">😂</span></p>
+
+        <p class="line spacer-line" data-reveal>I don't know exactly when that happened.</p>
+        <p class="line" data-reveal>Maybe it never really stopped.</p>
+        <p class="line" data-reveal>Maybe life just got loud enough that I learned how to ignore it.</p>
+
+        <button class="btn btn-primary" data-reveal data-next="6">Keep going →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 6 — WHAT I ACTUALLY WANT ============ -->
+    <section class="screen" data-screen="6" id="screen6">
+      <div class="screen-inner">
+        <p class="line" data-reveal>I don't want to promise you some perfect story.</p>
+        <p class="line" data-reveal>Because real life isn't like that.</p>
+
+        <p class="line spacer-line" data-reveal>There will be days when we're laughing until our stomachs hurt.</p>
+        <p class="line" data-reveal>And there will probably be days when one of us just needs the other to sit quietly beside them.</p>
+
+        <p class="line word-list" data-reveal>good days. bad days. big wins. small disappointments.</p>
+        <p class="line word-list" data-reveal>random adventures. long conversations.</p>
+        <p class="line" data-reveal>Arguments we'll eventually laugh about.</p>
+        <p class="line" data-reveal>Moments where one of us needs to cry.</p>
+        <p class="line" data-reveal>And moments where we'll probably be crying because we're laughing too hard. <span class="emoji">😂</span></p>
+
+        <p class="line spacer-line line-emphasis" data-reveal>I don't need us to have everything figured out.</p>
+        <p class="line line-emphasis" data-reveal>I just want us to figure things out together.</p>
+
+        <button class="btn btn-primary" data-reveal data-next="7">Keep going →</button>
+        <div class="deco deco-flower deco-tl" data-reveal><svg class="icon icon-peach"><use href="#art-flower"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 7 — THE GIVING / CARE MESSAGE ============ -->
+    <section class="screen screen-soft" data-screen="7" id="screen7">
+      <div class="screen-inner center">
+        <p class="line" data-reveal>I may not always have the biggest things to offer.</p>
+        <p class="line" data-reveal>But whenever life gives me a little something extra…</p>
+        <p class="line" data-reveal>I've always wanted the people I love to feel some of that happiness too.</p>
+
+        <p class="line word-list spacer-line" data-reveal>a spontaneous little surprise. showing up when it matters.</p>
+        <p class="line word-list" data-reveal>making a random day feel a little more special.</p>
+        <p class="line" data-reveal>Or simply being there when you need someone.</p>
+
+        <p class="line line-emphasis spacer-line" data-reveal>I want to be someone who adds a little more happiness to your life.</p>
+
+        <button class="btn btn-primary" data-reveal data-next="8">Keep going →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 8 — THE FUTURE ============ -->
+    <section class="screen" data-screen="8" id="screen8">
+      <div class="screen-inner center">
+        <p class="line" data-reveal>I don't know what our next chapter looks like.</p>
+        <p class="line" data-reveal>And honestly, maybe that's the beautiful part.</p>
+        <p class="line line-emphasis" data-reveal>We don't have to know yet.</p>
+        <p class="line" data-reveal>We could simply start with us.</p>
+        <p class="line word-list" data-reveal>talking. laughing. spending time together.</p>
+        <p class="line" data-reveal>Getting to know the versions of each other we've become.</p>
+        <p class="line" data-reveal>And seeing where that takes us.</p>
+
+        <button class="btn btn-primary" data-reveal data-next="9">Keep going →</button>
+        <div class="deco deco-butterfly deco-tr" data-reveal><svg class="icon icon-rose"><use href="#art-butterfly"/></svg></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 9 — THE QUESTION ============ -->
+    <section class="screen screen-question" data-screen="9" id="screen9">
+      <div class="screen-inner center">
+        <div class="doll-wrap doll-question" data-reveal>
+          <svg class="doll-svg"><use href="#art-doll"/></svg>
+        </div>
+        <p class="line line-name" data-reveal><span class="her-name">Ruby</span>... <span class="emoji">🎀</span></p>
+        <p class="line line-question" data-reveal>Would you give us a chance?</p>
+
+        <p class="line line-small spacer-line" data-reveal>Not a promise of perfection.</p>
+        <p class="line line-small" data-reveal>Not a promise that every day will be easy.</p>
+        <p class="line line-small" data-reveal>Just a chance.</p>
+        <p class="line line-small" data-reveal>A chance to choose each other on the good days…</p>
+        <p class="line line-small" data-reveal>and stay kind to each other on the difficult ones.</p>
+        <p class="line line-small word-list" data-reveal>to laugh together. to cry together. to grow together.</p>
+        <p class="line line-small" data-reveal>To make memories we haven't made yet.</p>
+
+        <div class="question-buttons">
+          <button class="btn btn-yes" id="yesBtn" data-reveal>YES, LET'S SEE ❤️</button>
+          <button class="btn btn-no" id="noBtn" data-reveal>NOT RIGHT NOW 🤍</button>
+        </div>
+        <p class="dodge-msg" id="dodgeMsg" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 10a — YES RESPONSE ============ -->
+    <section class="screen" data-screen="10yes" id="screen10yes">
+      <div class="screen-inner center">
+        <div class="doll-wrap doll-celebrate" id="dollCelebrate">
+          <svg class="doll-svg"><use href="#art-doll"/></svg>
+        </div>
+        <p class="line" data-reveal>Wait...</p>
+        <p class="line line-emphasis" data-reveal>You actually said yes? <span class="emoji">😭🎀</span></p>
+        <p class="line" data-reveal>Okay…</p>
+        <p class="line" data-reveal>Now I'm smiling at my screen like an idiot. <span class="emoji">😂❤️</span></p>
+        <p class="line line-emphasis" data-reveal>Maybe this is our chance to write something new.</p>
+        <button class="btn btn-primary" data-reveal data-next="11">There's one more thing... 💌</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 10b — NOT RIGHT NOW RESPONSE ============ -->
+    <section class="screen" data-screen="10no" id="screen10no">
+      <div class="screen-inner center">
+        <p class="line" data-reveal>Okay. <span class="emoji">🤍</span></p>
+        <p class="line" data-reveal>Thank you for being honest with me.</p>
+        <p class="line" data-reveal>I meant what I said.</p>
+        <p class="line" data-reveal>I care about you, and I'd rather have your honest answer than one you didn't really mean.</p>
+        <p class="line spacer-line" data-reveal>Whatever happens…</p>
+        <p class="line" data-reveal>I'm still glad I finally said it.</p>
+        <p class="line line-emphasis" data-reveal>You'll always be someone I'm grateful to have known.</p>
+        <button class="btn btn-primary" data-reveal data-next="11">Keep going →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 11 — FINAL SCRAPBOOK LETTER ============ -->
+    <section class="screen" data-screen="11" id="screen11">
+      <div class="screen-inner center">
+        <div class="letter-card" data-reveal>
+          <div class="deco deco-flower letter-deco-1"><svg class="icon icon-rose"><use href="#art-flower"/></svg></div>
+          <div class="deco deco-bow letter-deco-2"><svg class="icon icon-burgundy"><use href="#art-bow"/></svg></div>
+
+          <p class="handwritten-line" data-reveal>So…</p>
+          <p class="handwritten-line" data-reveal>I guess that's everything I've been trying to say.</p>
+          <p class="handwritten-line" data-reveal>I don't know what happens after this.</p>
+          <p class="handwritten-line" data-reveal>And I'm not going to pretend I do.</p>
+          <p class="handwritten-line" data-reveal>But I know one thing.</p>
+          <p class="handwritten-line handwritten-emphasis" data-reveal>I'd rather take the chance of finding out…</p>
+          <p class="handwritten-line" data-reveal>than spend another few years wondering what might have happened.</p>
+
+          <p class="handwritten-line spacer-line" data-reveal>Thank you for reading all of this.</p>
+          <p class="handwritten-line" data-reveal>And for being you.</p>
+
+          <p class="signature" id="signature" data-reveal>— <span id="signatureName"></span> <span class="emoji">🤍</span></p>
+        </div>
+
+        <!-- OPTIONAL PERSONAL CONTENT: memories + photo gallery. Hidden automatically if CONFIG has no entries. -->
+        <div class="memories" id="memoriesWrap" hidden>
+          <p class="memories-title">a few things I didn't want to forget</p>
+          <div class="memories-grid" id="memoriesGrid"></div>
+        </div>
+
+        <div class="photo-gallery" id="galleryWrap" hidden>
+          <div class="photo-strip" id="photoStrip"></div>
+        </div>
+
+        <button class="btn btn-restart" id="restartBtn" data-reveal>↺ Read it again</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MUSIC CONTROL ================= -->
+  <!-- Optional background song. Drop a file named music.mp3 in this folder to enable it (and set CONFIG.enableMusic = true in script.js).
+       Never autoplays with sound — she has to tap this button herself. -->
+  <button class="music-btn" id="musicBtn" aria-label="Toggle music" hidden>
+    <span id="musicIcon">♪</span>
+  </button>
+  <audio id="bgAudio" loop preload="none">
+    <source src="music.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- Confetti / hearts / flowers / butterflies canvas for the YES celebration -->
+  <canvas id="celebration-canvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
